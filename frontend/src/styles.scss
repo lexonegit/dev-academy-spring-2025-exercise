@@ -1,0 +1,174 @@
+$color-background: #0e0e0e;
+$color-primary: #292929;
+$color-secondary: #363636;
+$color-text: #f1f1f1;
+
+$border: #3f3f3f;
+$shadow: rgba(255, 255, 255, 0.05);
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+body {
+  background-color: $color-background;
+  color: $color-text;
+
+  font-family: "Segoe UI", sans-serif;
+  padding: 0;
+  margin: 0 0 6em 0;
+}
+
+.container {
+  margin: 5% auto 0 auto;
+  max-width: 1080px;
+}
+
+.header,
+.card {
+  text-align: center;
+}
+
+.header,
+.card {
+  box-shadow: 0 2px 2px $shadow;
+  border-color: $border;
+  border-style: solid;
+}
+
+.header {
+  background-color: $color-secondary;
+  border-width: 1px;
+  padding: 0.8em;
+  border-radius: 0.25em 0.25em 0 0;
+}
+
+.block {
+  margin-top: 0.5em;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+
+  background-color: $color-primary;
+  border-width: 0 1px 1px 1px;
+  border-radius: 0 0 0.25em 0.25em;
+
+  padding: 1em;
+}
+
+// Text elements
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.7em;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+p {
+  font-size: 1.05em;
+  font-weight: 400;
+}
+
+// Other
+.instructions {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+// Electricity table
+.electricity-table {
+  width: 100%;
+  border-radius: 0.25em;
+}
+
+.day-view-table {
+  display: flex;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+.view-details-button {
+  margin-left: 10px;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 0.2em;
+  padding: 0.75em 0.5em;
+  cursor: pointer;
+  background-image: linear-gradient(#e7fff1, #80daa5);
+
+  &:hover {
+    background-image: linear-gradient(#ffffff, #a3d8b9);
+  }
+}
+// Day view
+.day-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.day-view,
+.day-view * {
+  z-index: 10; // Ensure everything day-view related is on top
+}
+
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.window {
+  display: flex;
+  flex-direction: column;
+
+  background: $color-primary;
+  padding: 20px;
+  width: 75%;
+  height: auto;
+  text-align: center;
+  border: 1px solid black;
+}
+
+// Media queries
+@media only screen and (max-width: 920px) {
+  .header,
+  .main {
+    border-radius: 0;
+  }
+}
