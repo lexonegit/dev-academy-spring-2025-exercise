@@ -25,7 +25,7 @@ body {
 
 .container {
   margin: 5% auto 0 auto;
-  max-width: 1080px;
+  max-width: 1400px;
 }
 
 .header,
@@ -117,15 +117,16 @@ p {
 .view-details-button {
   margin-left: 10px;
   color: rgb(0, 0, 0);
+  font-size: 0.9em;
   font-weight: bold;
   border: 1px solid rgb(0, 0, 0);
   border-radius: 0.2em;
   padding: 0.75em 0.5em;
   cursor: pointer;
-  background-image: linear-gradient(#e7fff1, #80daa5);
+  background-image: linear-gradient(#ffffff, #dbdbdb);
 
   &:hover {
-    background-image: linear-gradient(#ffffff, #a3d8b9);
+    background-image: linear-gradient(#e5edff, #96b7ff);
   }
 }
 // Day view
@@ -141,9 +142,29 @@ p {
   height: 100%;
 }
 
-.day-view,
-.day-view * {
+.day-view, .window {
   z-index: 10; // Ensure everything day-view related is on top
+}
+
+input {
+  font-family: "Segoe UI", sans-serif;
+}
+
+.search-input {
+  margin: 1em 0 0 0;
+  padding: 0.4em;
+  width: 300px;
+}
+
+.date-input {
+  margin: 1em 0.5em;
+  padding: 0.3em;
+  width: 170px;
+  font-size: 1.2em;
+}
+
+.filter-input {
+  padding: 0.3em;
 }
 
 .background {
@@ -160,7 +181,7 @@ p {
   background: $color-primary;
   padding: 20px;
   width: 75%;
-  height: auto;
+  height: 95%;
   text-align: center;
   border: 1px solid black;
 }

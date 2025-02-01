@@ -2,20 +2,25 @@ import { useState, useEffect } from "react";
 import "./styles.scss";
 import DataTable from "react-data-table-component";
 
+import { DayView } from "./components/day-view";
+
 function App() {
   const [source, setSource] = useState(null);
   const [filteredSource, setFilteredSource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const current = new Date("2024-03-01");
-  const now = current.toISOString().split("T")[0];
-  const sevenDaysAgo = new Date(current - 7 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
+  const [visible, setVisible] = useState(false);
+  const [row, setRow] = useState(null);
 
-  const [startDate, setStartDate] = useState(sevenDaysAgo);
-  const [endDate, setEndDate] = useState(now);
+  const start = new Date("2024-10-01");
+  const end = new Date(start.getTime() - (365 - 1) * 24 * 60 * 60 * 1000);
+
+  const startIso = start.toISOString().split("T")[0];
+  const startMinusSevenDaysIso = end.toISOString().split("T")[0];
+
+  const [startDate, setStartDate] = useState(startIso);
+  const [endDate, setEndDate] = useState(startMinusSevenDaysIso);
 
   const API_URL = "http://localhost:5555/api/data";
 
@@ -26,22 +31,27 @@ function App() {
         color: "#fff",
         fontSize: "1.2em",
         fontWeight: "bold",
+        padding: "1em 1em",
+      },
+    },
+    rows: {
+      style: {
+        padding: "1em 0",
+        fontSize: "1em",
       },
     },
   };
 
   useEffect(() => {
-    // const now = new Date();
-    // setFromDate(now.toISOString().split("T")[0]);
+    console.log("useEffect");
+
+    // const now =  new Date("2024-01-01");
+    // setStartDate(now.toISOString().split("T")[0]);
 
     // const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    // setToDate(sevenDaysAgo.toISOString().split("T")[0]);
+    // setEndDate(sevenDaysAgo.toISOString().split("T")[0]);
 
-    console.log(
-      startDate,
-      endDate,
-      `${API_URL}?startDate=${startDate}&endDate=${endDate}`
-    );
+    setLoading(true);
 
     fetch(`${API_URL}?startDate=${startDate}&endDate=${endDate}`)
       .then((response) => {
@@ -92,81 +102,63 @@ function App() {
         );
         setLoading(false);
       });
-  }, []);
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    console.log("useEffect filteredSource", filteredSource);
+  }, [filteredSource]);
 
   const columns = [
     {
-      name: "Date",
-      selector: (row) => (
+      id: "time",
+      name: <div>Date</div>,
+      selector: (row) => row.date,
+      sortable: true,
+      cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <span>{row.date}</span>
-          <button onClick={() => {}} className="view-details-button">
+          <button
+            onClick={() => handleToggleDayView(row)}
+            className="view-details-button"
+          >
             View details
           </button>
         </div>
       ),
-      sortable: true,
-      onHeaderClick: () => {
-        console.log("clicked");
-      },
+      width: "25%",
     },
     {
-      name: "Total production", // Listed as mWh in database
+      name: <div>Total production</div>, // Listed as mWh in database
       selector: (row) => `${Math.round(row.totalProduction)} mWh`,
       sortable: true,
     },
     {
-      name: "Total consumption", // Listed as kWh in database, convert to mWh
+      name: <div>Total consumption</div>, // Listed as kWh in database, convert to mWh
       selector: (row) => `${Math.round(row.totalConsumption / 1000)} mWh`,
       sortable: true,
     },
     {
-      name: "Average price",
+      name: <div>Average price</div>,
+
       selector: (row) =>
         `${((row.averagePrice * 100) / 100).toFixed(2)} snt / kWh`,
       sortable: true,
     },
     {
-      name: "Longest consecutive negative hours",
+      name: <div>Longest consecutive negative hours</div>,
       selector: (row) => row.longestConsecutiveNegativeHours,
       sortable: true,
     },
   ];
 
-  const dayColumns = [
-    {
-      name: "Time",
-      selector: (row) => row.startTime.split("T")[1].slice(0, 5),
-      sortable: true,
-    },
-    {
-      name: "Production", // Listed as mWh in database
-      selector: (row) => `${Math.round(row.productionAmount)} mWh`,
-      sortable: true,
-    },
-    {
-      name: "Consumption", // Listed as kWh in database, convert to mWh
-      selector: (row) => `${Math.round(row.consumptionAmount / 1000)} mWh`,
-      sortable: true,
-    },
-    {
-      name: "Hour price",
-      selector: (row) =>
-        `${((row.hourlyPrice * 100) / 100).toFixed(2)} snt / kWh`,
-      sortable: true,
-    },
-    {
-      name: "Longest consecutive negative hours",
-      selector: (row) => row.longestConsecutiveNegativeHours,
-      sortable: true,
-    },
-  ];
+  const handleEndDateChange = (e) => {
+    const newDate = e.target.value;
+    setEndDate(newDate);
+  };
 
-  const handleDateChange = (e) => {
-    const start = document.querySelector("#startDate").value;
-    const end = document.querySelector("#endDate").value;
-
-    console.log(start, end);
+  const handleStartDateChange = (e) => {
+    const newDate = e.target.value;
+    setStartDate(newDate);
   };
 
   const handleSearch = (e) => {
@@ -186,103 +178,92 @@ function App() {
     console.log("FILTERED", source);
   };
 
-  const toggleDayView = () => {
-    console.log("toggleDayView");
+  const handleTagFilter = (e) => {
+    const query = e.target.value;
+    console.log("Q:", query);
+    console.log("DATA", source);
 
-    const dayView = document.querySelector(".day-view");
-    dayView.style.display = dayView.style.display == "none" ? "flex" : "none";
+    const newData = {
+      count: source.count,
+      data: source.data.filter((row) => {
+        return row.tags.includes(query);
+      }),
+    };
+
+    setFilteredSource(newData);
+
+    console.log("FILTERED", source);
+  };
+
+  const handleToggleDayView = (row) => {
+    console.log("toggleDayView (App)", row);
+    setRow(row);
+    setVisible(!visible);
   };
 
   return (
     <>
-      <div className="day-view" style={{ display: "none" }}>
-        <div className="background" onClick={toggleDayView}></div>
-        <div className="window">
-          <h2>Day view</h2>
-          {loading ? (
-            <p>Loading data...</p>
-          ) : error ? (
-            <p className="error">Error: {error}</p>
-          ) : (
-            <>
-              <p>Total production: </p>
-              <p>Total consumption: </p>
-              <p>Average price: </p>
-              <p>Hour with most consumption compared to production: </p>
-              <p>Top 3 cheapest hours: </p>
-
-              {/* <DataTable
-                className="day-view-table"
-                columns={dayColumns}
-                data={filteredSource.data[2].entries}
-                customStyles={tableStyles}
-                pagination
-              /> */}
-            </>
-          )}
-        </div>
-      </div>
+      <DayView
+        handleToggleDayView={handleToggleDayView}
+        visible={visible}
+        row={row}
+      />
       <div className="container">
         <div className="block">
           <div className="header">
-            <h2>Electricity stats</h2>
-
             <div className="instructions">
-              <p>Instructions:</p>
+              <h2>Electricity stats</h2>
+              <p>Feature instructions:</p>
               <ul>
                 <li>
-                  enter start and end date
+                  enter time range to fetch data from
                   <ul>
                     <li>
-                      by default showing the last 7 days (starting from the
+                      by default showing the last 365 days (starting from the
                       latest available data entry)
                     </li>
                   </ul>
                 </li>
-                <li>click on table headers to sort data</li>
+                <li>click on table headers to sort data by column</li>
                 <li>filter data with filters (search and tags)</li>
                 <li>
-                  click on "view details" button to see a more detailed view of
-                  the day
+                  click on the "View details" buttons to see a more detailed
+                  view of the day (single day view)
                 </li>
               </ul>
+
+              <h3>Time range</h3>
+              <p>
+                Fetch data between:{" "}
+                <input
+                  type="date"
+                  id="endDate"
+                  onChange={handleEndDateChange}
+                  value={endDate}
+                  className="date-input"
+                />
+                and
+                <input
+                  type="date"
+                  id="startDate"
+                  onChange={handleStartDateChange}
+                  value={startDate}
+                  className="date-input"
+                />
+              </p>
+
+              <h3>Filtering</h3>
+              <p>
+                <input
+                  type="text"
+                  placeholder="Search by date (yyyy-mm-dd)"
+                  onChange={handleSearch}
+                  className="search-input"
+                />
+                <input type="checkbox" className="filter-input" />
+                Show only days where average price is negative
+              </p>
             </div>
-
-            <p>
-              Fetch data between:
-              <input
-                type="date"
-                id="endDate"
-                onChange={handleDateChange}
-                value={endDate}
-              />
-              ---
-              <input
-                type="date"
-                id="startDate"
-                onChange={handleDateChange}
-                value={startDate}
-              />
-            </p>
-
-            <h3>Filtering</h3>
-            <p>
-              Search:{" "}
-              <input
-                type="text"
-                placeholder="Search by date yyyy-mm-dd"
-                onChange={handleSearch}
-              />
-            </p>
-            <input type="checkbox" id="monday" name="weekday" value="monday" />
-            <label htmlFor="monday">Show week (mon-fri)</label>
-            <input
-              type="checkbox"
-              id="tuesday"
-              name="weekday"
-              value="tuesday"
-            />
-            <label htmlFor="tuesday">Show weekend (sat-sun)</label>
           </div>
           <div className="card">
             {loading ? (
@@ -292,6 +273,8 @@ function App() {
             ) : (
               <DataTable
                 className="electricity-table"
+                defaultSortFieldId="time"
+                defaultSortAsc={false}
                 columns={columns}
                 data={filteredSource.data}
                 customStyles={tableStyles}
