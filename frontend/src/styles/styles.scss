@@ -2,9 +2,12 @@ $color-background: #0e0e0e;
 $color-primary: #292929;
 $color-secondary: #363636;
 $color-text: #f1f1f1;
+$color-link: #4791ff;
 
 $border: #3f3f3f;
 $shadow: rgba(255, 255, 255, 0.05);
+
+$max-width: 1120px;
 
 * {
   -webkit-box-sizing: border-box;
@@ -25,7 +28,7 @@ body {
 
 .container {
   margin: 30px auto 0 auto;
-  max-width: 1400px;
+  max-width: $max-width;
 }
 
 .header,
@@ -65,16 +68,10 @@ body {
 }
 
 // Text elements
-h1,
 h2,
 h3,
 p {
   margin: 0;
-}
-
-h1 {
-  font-size: 2.2em;
-  font-weight: 700;
 }
 
 h2 {
@@ -88,20 +85,28 @@ h3 {
 }
 
 p {
-  font-size: 1.05em;
-  font-weight: 400;
+  font-size: 1em;
 }
 
-// Other
-.instructions {
+a {
+  color: $color-link;
+}
+
+a:visited {
+  color: $color-link;
+}
+
+.container-left {
   display: flex;
   flex-direction: column;
   text-align: left;
+
+  margin: 0.5em 0;
 }
 
 .highlight {
   color: yellow;
-  font-size: 1.3em
+  font-size: 1.3em;
 }
 
 // Electricity table
@@ -119,21 +124,6 @@ p {
   font-weight: bold;
 }
 
-.view-details-button {
-  margin-left: 10px;
-  color: rgb(0, 0, 0);
-  font-size: 0.9em;
-  font-weight: bold;
-  border: 1px solid rgb(0, 0, 0);
-  border-radius: 0.2em;
-  padding: 0.75em 0.5em;
-  cursor: pointer;
-  background-image: linear-gradient(#ffffff, #dbdbdb);
-
-  &:hover {
-    background-image: linear-gradient(#e5edff, #96b7ff);
-  }
-}
 // Day view
 .day-view {
   display: flex;
@@ -147,7 +137,8 @@ p {
   height: 100%;
 }
 
-.day-view, .window {
+.day-view,
+.window {
   z-index: 10; // Ensure everything day-view related is on top
 }
 
@@ -157,15 +148,18 @@ input {
 
 .search-input {
   margin: 1em 0 0 0;
-  padding: 0.4em;
+  padding: 0.3em;
+  font-size: 1em;
   width: 300px;
+  max-width: 100%;
 }
 
 .date-input {
   margin: 1em 0.5em;
   padding: 0.3em;
-  width: 170px;
-  font-size: 1.2em;
+  font-size: 1em;
+  width: 135px;
+  max-width: 100%;
 }
 
 .filter-input {
@@ -192,13 +186,13 @@ input {
 }
 
 .window-header {
-  display:flex;
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
 .window-header button {
-  width: 42px;
+  width: 80px;
   height: 100%;
   font-size: 1.2em;
   color: white;
@@ -217,8 +211,38 @@ input {
   font-weight: bold;
 }
 
+.time {
+  display: inline-block;
+  background-color: #000000;
+  color: white;
+}
+
+.view-details-button {
+  color: #000000;
+
+  cursor: pointer;
+  background-image: linear-gradient(#ffffff, #dbdbdb);
+}
+
+.view-details-button:hover {
+  background-image: linear-gradient(#e5edff, #96b7ff);
+}
+
+.time-cell {
+  display: flex;
+  gap: 10px;
+}
+
+.time-cell * {
+  padding: 0.5em 0.5em;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 0.2em;
+  border: 1px solid black;
+}
+
 // Media queries
-@media only screen and (max-width: 920px) {
+@media only screen and (max-width: $max-width) {
   .header,
   .main {
     border-radius: 0;

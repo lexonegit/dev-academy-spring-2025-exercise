@@ -1,57 +1,31 @@
 import { useState, useEffect } from "react";
-import "./styles.scss";
-import "./checkbox.scss";
-import DataTable from "react-data-table-component";
+import config from "../config.json";
+import "./styles/styles.scss";
+import "./styles/checkbox.scss";
 
-import { DayView } from "./components/day-view";
-import formats from "./formats/data-formatting";
+import DayViewOverlay from "./components/day-view-overlay";
+import MainViewTable from "./components/main-view-table";
 
 function App() {
-  const [source, setSource] = useState(null);
-  const [filteredSource, setFilteredSource] = useState(null);
+  const [apiData, setApiData] = useState(null);
+  const [filteredApiData, setFilteredApiData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [visible, setVisible] = useState(false);
-  const [row, setRow] = useState(null);
+  const [dayViewVisible, setDayViewVisible] = useState(false);
+  const [dayData, setDayData] = useState(null);
 
   const start = new Date("2024-10-01");
-  const end = new Date(start.getTime() - (365 - 1) * 24 * 60 * 60 * 1000);
-  const startIso = start.toISOString().split("T")[0];
-  const startMinusSevenDaysIso = end.toISOString().split("T")[0];
+  const end = new Date(start.getTime() - (365 - 1) * 24 * 60 * 60 * 1000); // start minus 365 days
 
-  const [startDate, setStartDate] = useState(startIso);
-  const [endDate, setEndDate] = useState(startMinusSevenDaysIso);
+  const [startDate, setStartDate] = useState(start.toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState(end.toISOString().split("T")[0]);
   const [dayDifference, setDayDifference] = useState(0);
 
-  const API_URL = "http://localhost:5555/api/data";
-
-  const tableStyles = {
-    headCells: {
-      style: {
-        backgroundColor: "#333",
-        color: "#fff",
-        fontSize: "1.2em",
-        fontWeight: "bold",
-        padding: "1em 1em",
-      },
-    },
-    rows: {
-      style: {
-        padding: "1em 0",
-        fontSize: "1em",
-      },
-    },
-    cells: {
-      style: {
-        borderRight: "1px solid #ddd",
-      },
-    },
-  };
-
   useEffect(() => {
-    console.log("useEffect");
+    // console.log("FETCHING DATA");
 
+    // Calculate the day difference between start and end
     const days = new Date(startDate).getTime() - new Date(endDate).getTime();
     const dayCount = days / (1000 * 60 * 60 * 24) + 1;
     setDayDifference(dayCount < 0 ? 0 : dayCount);
@@ -59,31 +33,23 @@ function App() {
     setError(null);
     setLoading(true);
 
-    fetch(`${API_URL}?startDate=${startDate}&endDate=${endDate}`)
+    fetch(`${config.API_URL}?startDate=${startDate}&endDate=${endDate}`)
       .then((response) => {
         if (!response.ok) {
-          // 200
-          console.log("ERROR", response);
           throw new Error(
             `Failed to fetch API data. Reason: ${response.statusText} (${response.status})`
           );
         }
-
+        // 200
         return response.json();
       })
       .then((data) => {
-        console.log("LOAD", data);
-
-        // CLIENT SIDE CALCULATIONS TO GET THE REST OF THE REQUIRED DATA
-
-        // Calculate longset consecutive negative hours
+        // Find the longest consecutive negative hours
         for (const day of data.data) {
           let consecutiveNegativeHours = 0;
           let maxNegativeHours = 0;
 
           for (const entry of day.entries) {
-            // console.log(entry.hourlyPrice, entry.hourlyPrice < 0);
-
             if (entry.hourlyPrice < 0) {
               consecutiveNegativeHours++;
               maxNegativeHours = Math.max(
@@ -98,79 +64,17 @@ function App() {
           day.longestConsecutiveNegativeHours = maxNegativeHours;
         }
 
-        setSource(data);
-        setFilteredSource(data);
+        setApiData(data);
+        setFilteredApiData(data);
         setLoading(false);
       })
       .catch((error) => {
         setError(
-          `Failed to fetch data from: ${API_URL} - Please ensure the Backend app AND Postgres server are running (Docker)`
+          `Failed to fetch data from: ${config.API_URL} - Please ensure the Backend app AND Postgres server are running - Actual error: ${error}`
         );
         setLoading(false);
       });
   }, [startDate, endDate]);
-
-  useEffect(() => {
-    console.log("useEffect filteredSource", filteredSource);
-  }, [filteredSource]);
-
-  const columns = [
-    {
-      id: "time",
-      name: <div>Date</div>,
-      selector: (row) => row.date,
-      sortable: true,
-      cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span>{row.date}</span>
-          <button
-            onClick={() => handleToggleDayView(row)}
-            className="view-details-button"
-          >
-            View details
-          </button>
-        </div>
-      ),
-      width: "25%",
-    },
-    {
-      name: (
-        <div>
-          Total production <div className="highlight">(mWh)</div>
-        </div>
-      ),
-      selector: (row) => row.totalProduction,
-      cell: (row) => formats.production(row.totalProduction),
-      sortable: true,
-    },
-    {
-      name: (
-        <div>
-          Total consumption <div className="highlight">(mWh)</div>
-        </div>
-      ),
-      selector: (row) => row.totalConsumption,
-      cell: (row) => formats.consumption(row.totalConsumption),
-      sortable: true,
-    },
-    {
-      name: (
-        <div>
-          Average price <div className="highlight">(snt/kWh)</div>
-        </div>
-      ),
-
-      selector: (row) => row.averagePrice,
-      cell: (row) => formats.price(row.averagePrice),
-      sortable: true,
-    },
-    {
-      name: <div>Longest consecutive negative hours</div>,
-      selector: (row) => row.longestConsecutiveNegativeHours,
-      cell: (row) => formats.hours(row.longestConsecutiveNegativeHours),
-      sortable: true,
-    },
-  ];
 
   const handleEndDateChange = (e) => {
     const newDate = e.target.value;
@@ -183,89 +87,82 @@ function App() {
   };
 
   const handleSearch = (e) => {
+    // console.log("handleSearch");
     const query = e.target.value.toLowerCase();
-    console.log("Q:", query);
-    console.log("DATA", source);
 
     const newData = {
-      count: source.count,
-      data: source.data.filter((row) => {
-        return row.date.toLowerCase().includes(query);
+      count: apiData.count,
+      data: apiData.data.filter((data) => {
+        return data.date.toLowerCase().includes(query);
       }),
     };
 
-    setFilteredSource(newData);
-
-    console.log("FILTERED", source);
+    setFilteredApiData(newData);
   };
 
   const handlePriceTagFilter = (e) => {
+    // console.log("handlePriceTagFilter");
     const isChecked = e.target.checked;
 
     const newData = {
-      count: source.count,
-      data: source.data.filter((row) => {
-        if (isChecked) {
-          return row.averagePrice < 0;
-        } else {
-          return true;
-        }
+      count: apiData.count,
+      data: apiData.data.filter((data) => {
+        return isChecked ? data.averagePrice < 0 : true;
       }),
     };
 
-    setFilteredSource(newData);
-
-    console.log("FILTERED", source);
+    setFilteredApiData(newData);
   };
 
-  const handleToggleDayView = (row) => {
-    console.log("toggleDayView (App)", row);
-    setRow(row);
-    setVisible(!visible);
+  const handleToggleDayView = (data) => {
+    // console.log("handleToggleDayView (App)");
+    setDayData(data);
+    setDayViewVisible(!dayViewVisible);
   };
 
   return (
     <>
-      <DayView
+      <DayViewOverlay
         handleToggleDayView={handleToggleDayView}
-        visible={visible}
-        row={row}
+        visible={dayViewVisible}
+        data={dayData}
       />
       <div className="container">
         <div className="block">
           <div className="header">
-            <div className="instructions">
+            <div className="container-left">
               <h2>
                 Electricity stats app - Leevi Seppälä -{" "}
                 <a
                   href="https://github.com/lexonegit/solita-exercise-2025"
                   target="_blank"
-                  rel="noreferrer"
                 >
                   Link to GitHub
                 </a>
               </h2>
-              <p>Usage instructions:</p>
-              <ul>
-                <li>
-                  enter time range to fetch data from
-                  <ul>
-                    <li>
-                      by default showing the last 365 days (starting from the
-                      latest available data entry)
-                    </li>
-                  </ul>
-                </li>
-                <li>click on table headers to sort data by column</li>
-                <li>filter data with filters (search and 1 tag option)</li>
-                <li>
-                  click on the <b>"View details"</b> buttons to see a more
-                  detailed view of the day (single day view)
-                </li>
-              </ul>
+              <div>
+                <p>Usage instructions:</p>
+                <ul>
+                  <li>
+                    enter time range to fetch data from
+                    <ul>
+                      <li>
+                        by default showing the last 365 days (starting from the
+                        latest available data entry)
+                      </li>
+                    </ul>
+                  </li>
+                  <li>click on table headers to sort data by column</li>
+                  <li>filter data with filters (search and 1 tag option)</li>
+                  <li>
+                    click on the <b>"View details"</b> buttons to see a more
+                    detailed view of the day (single day view)
+                  </li>
+                </ul>
+              </div>
 
               <h3>Time range</h3>
-              <p>
+              <div>
                 Fetch data between:{" "}
                 <input
                   type="date"
@@ -283,11 +180,11 @@ function App() {
                   className="date-input"
                 />
                 = range of {dayDifference} days
-              </p>
+              </div>
 
               <h3>Filtering</h3>
 
-              <p>
+              <div>
                 <input
                   type="text"
                   placeholder="Search by date (yyyy-mm-dd)"
@@ -299,7 +196,7 @@ function App() {
                   <input type="checkbox" onChange={handlePriceTagFilter} />
                   <span className="checkmark"></span>
                 </label>
-              </p>
+              </div>
             </div>
           </div>
           <div className="card">
@@ -308,15 +205,9 @@ function App() {
             ) : error ? (
               <p className="error">Error: {error}</p>
             ) : (
-              <DataTable
-                className="electricity-table"
-                defaultSortFieldId="time"
-                defaultSortAsc={false}
-                columns={columns}
-                data={filteredSource.data}
-                customStyles={tableStyles}
-                pagination
-                paginationRowsPerPageOptions={[10, 20, 30, 100, 365]}
+              <MainViewTable
+                filteredSource={filteredApiData}
+                handleToggleDayView={handleToggleDayView}
               />
             )}
           </div>
