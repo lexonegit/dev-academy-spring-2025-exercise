@@ -24,7 +24,7 @@ body {
 }
 
 .container {
-  margin: 5% auto 0 auto;
+  margin: 30px auto 0 auto;
   max-width: 1400px;
 }
 
@@ -97,6 +97,11 @@ p {
   display: flex;
   flex-direction: column;
   text-align: left;
+}
+
+.highlight {
+  color: yellow;
+  font-size: 1.4em
 }
 
 // Electricity table
@@ -184,6 +189,32 @@ input {
   height: 95%;
   text-align: center;
   border: 1px solid black;
+}
+
+.window-header {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.window-header button {
+  width: 42px;
+  height: 100%;
+  font-size: 1.2em;
+  color: white;
+  background-color: rgb(218, 0, 0);
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.tag {
+  display: inline-block;
+  margin: 0.2em 0.2em;
+  padding: 0.1em 0.5em;
+  border-radius: 0.2em;
+  background-color: rgb(50, 255, 94);
+  color: rgb(0, 0, 0);
+  font-weight: bold;
 }
 
 // Media queries

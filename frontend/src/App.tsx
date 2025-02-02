@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./styles.scss";
+import "./checkbox.scss";
 import DataTable from "react-data-table-component";
 
 import { DayView } from "./components/day-view";
@@ -15,12 +16,12 @@ function App() {
 
   const start = new Date("2024-10-01");
   const end = new Date(start.getTime() - (365 - 1) * 24 * 60 * 60 * 1000);
-
   const startIso = start.toISOString().split("T")[0];
   const startMinusSevenDaysIso = end.toISOString().split("T")[0];
 
   const [startDate, setStartDate] = useState(startIso);
   const [endDate, setEndDate] = useState(startMinusSevenDaysIso);
+  const [dayDifference, setDayDifference] = useState(0);
 
   const API_URL = "http://localhost:5555/api/data";
 
@@ -40,17 +41,21 @@ function App() {
         fontSize: "1em",
       },
     },
+    cells: {
+      style: {
+        borderRight: "1px solid #ddd",
+      },
+    },
   };
 
   useEffect(() => {
     console.log("useEffect");
 
-    // const now =  new Date("2024-01-01");
-    // setStartDate(now.toISOString().split("T")[0]);
+    const days = new Date(startDate).getTime() - new Date(endDate).getTime();
+    const dayCount = days / (1000 * 60 * 60 * 24) + 1;
+    setDayDifference(dayCount < 0 ? 0 : dayCount);
 
-    // const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    // setEndDate(sevenDaysAgo.toISOString().split("T")[0]);
-
+    setError(null);
     setLoading(true);
 
     fetch(`${API_URL}?startDate=${startDate}&endDate=${endDate}`)
@@ -128,25 +133,40 @@ function App() {
       width: "25%",
     },
     {
-      name: <div>Total production</div>, // Listed as mWh in database
-      selector: (row) => `${Math.round(row.totalProduction)} mWh`,
+      name: (
+        <div>
+          Total production <div className="highlight">(mWh)</div>
+        </div>
+      ), // Listed as mWh in database
+      selector: (row) => row.totalProduction,
+      cell: (row) => `${Math.round(row.totalProduction)}`,
       sortable: true,
     },
     {
-      name: <div>Total consumption</div>, // Listed as kWh in database, convert to mWh
-      selector: (row) => `${Math.round(row.totalConsumption / 1000)} mWh`,
+      name: (
+        <div>
+          Total consumption <div className="highlight">(mWh)</div>
+        </div>
+      ), // Listed as kWh in database, convert to mWh
+      selector: (row) => row.totalConsumption,
+      cell: (row) => `${Math.round(row.totalConsumption / 1000)}`,
       sortable: true,
     },
     {
-      name: <div>Average price</div>,
+      name: (
+        <div>
+          Average price <div className="highlight">(snt/kWh)</div>
+        </div>
+      ),
 
-      selector: (row) =>
-        `${((row.averagePrice * 100) / 100).toFixed(2)} snt / kWh`,
+      selector: (row) => row.averagePrice,
+      cell: (row) => `${((row.averagePrice * 100) / 100).toFixed(2)}`,
       sortable: true,
     },
     {
       name: <div>Longest consecutive negative hours</div>,
       selector: (row) => row.longestConsecutiveNegativeHours,
+      cell: (row) => `${row.longestConsecutiveNegativeHours} hrs`,
       sortable: true,
     },
   ];
@@ -178,15 +198,17 @@ function App() {
     console.log("FILTERED", source);
   };
 
-  const handleTagFilter = (e) => {
-    const query = e.target.value;
-    console.log("Q:", query);
-    console.log("DATA", source);
+  const handlePriceTagFilter = (e) => {
+    const isChecked = e.target.checked;
 
     const newData = {
       count: source.count,
       data: source.data.filter((row) => {
-        return row.tags.includes(query);
+        if (isChecked) {
+          return row.averagePrice < 0;
+        } else {
+          return true;
+        }
       }),
     };
 
@@ -212,8 +234,17 @@ function App() {
         <div className="block">
           <div className="header">
             <div className="instructions">
-              <h2>Electricity stats</h2>
-              <p>Feature instructions:</p>
+              <h2>
+                Electricity stats app - Leevi Seppälä -{" "}
+                <a
+                  href="https://github.com/lexonegit/solita-exercise-2025"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Link to GitHub
+                </a>
+              </h2>
+              <p>Usage instructions:</p>
               <ul>
                 <li>
                   enter time range to fetch data from
@@ -225,9 +256,9 @@ function App() {
                   </ul>
                 </li>
                 <li>click on table headers to sort data by column</li>
-                <li>filter data with filters (search and tags)</li>
+                <li>filter data with filters (search and 1 tag option)</li>
                 <li>
-                  click on the "View details" buttons to see a more detailed
+                  click on the <b>"View details"</b> buttons to see a more detailed
                   view of the day (single day view)
                 </li>
               </ul>
@@ -250,9 +281,11 @@ function App() {
                   value={startDate}
                   className="date-input"
                 />
+                = range of {dayDifference} days
               </p>
 
               <h3>Filtering</h3>
+
               <p>
                 <input
                   type="text"
@@ -260,8 +293,11 @@ function App() {
                   onChange={handleSearch}
                   className="search-input"
                 />
-                <input type="checkbox" className="filter-input" />
-                Show only days where average price is negative
+                <label className="checkbox-container">
+                  Only show days where average price was negative
+                  <input type="checkbox" onChange={handlePriceTagFilter} />
+                  <span className="checkmark"></span>
+                </label>
               </p>
             </div>
           </div>
@@ -279,6 +315,7 @@ function App() {
                 data={filteredSource.data}
                 customStyles={tableStyles}
                 pagination
+                paginationRowsPerPageOptions={[10, 20, 30, 100, 365]}
               />
             )}
           </div>
