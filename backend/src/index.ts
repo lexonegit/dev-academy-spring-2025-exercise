@@ -1,6 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
-import * as config from "../config.json";
+import config from "../config.json";
 import pg from "@fastify/postgres";
 
 import dataRoute from "./routes/data-route";
@@ -18,7 +18,7 @@ await fastify.register(cors, {
 
 // Database
 fastify.register(pg, {
-  connectionString: `postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`,
+  connectionString: `postgres://${config.DB_USER}:${config.DB_PASSWORD}@${config.DB_HOST}:${config.DB_PORT}/${config.DB_NAME}`,
 });
 
 // Routes
@@ -33,8 +33,8 @@ await fastify.ready();
 
 try {
   await fastify.listen({
-    host: config.server.host,
-    port: config.server.port,
+    host: config.SERVER_HOST,
+    port: config.SERVER_PORT,
   });
 } catch (error) {
   fastify.log.error(error);
