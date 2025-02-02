@@ -4,6 +4,7 @@ import "./checkbox.scss";
 import DataTable from "react-data-table-component";
 
 import { DayView } from "./components/day-view";
+import formats from "./formats/data-formatting";
 
 function App() {
   const [source, setSource] = useState(null);
@@ -137,9 +138,9 @@ function App() {
         <div>
           Total production <div className="highlight">(mWh)</div>
         </div>
-      ), // Listed as mWh in database
+      ),
       selector: (row) => row.totalProduction,
-      cell: (row) => `${Math.round(row.totalProduction)}`,
+      cell: (row) => formats.production(row.totalProduction),
       sortable: true,
     },
     {
@@ -147,9 +148,9 @@ function App() {
         <div>
           Total consumption <div className="highlight">(mWh)</div>
         </div>
-      ), // Listed as kWh in database, convert to mWh
+      ),
       selector: (row) => row.totalConsumption,
-      cell: (row) => `${Math.round(row.totalConsumption / 1000)}`,
+      cell: (row) => formats.consumption(row.totalConsumption),
       sortable: true,
     },
     {
@@ -160,13 +161,13 @@ function App() {
       ),
 
       selector: (row) => row.averagePrice,
-      cell: (row) => `${((row.averagePrice * 100) / 100).toFixed(2)}`,
+      cell: (row) => formats.price(row.averagePrice),
       sortable: true,
     },
     {
       name: <div>Longest consecutive negative hours</div>,
       selector: (row) => row.longestConsecutiveNegativeHours,
-      cell: (row) => `${row.longestConsecutiveNegativeHours} hrs`,
+      cell: (row) => formats.hours(row.longestConsecutiveNegativeHours),
       sortable: true,
     },
   ];
@@ -258,8 +259,8 @@ function App() {
                 <li>click on table headers to sort data by column</li>
                 <li>filter data with filters (search and 1 tag option)</li>
                 <li>
-                  click on the <b>"View details"</b> buttons to see a more detailed
-                  view of the day (single day view)
+                  click on the <b>"View details"</b> buttons to see a more
+                  detailed view of the day (single day view)
                 </li>
               </ul>
 

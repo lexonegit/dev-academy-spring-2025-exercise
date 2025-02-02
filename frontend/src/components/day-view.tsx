@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles.scss";
 import DataTable from "react-data-table-component";
+import formats from "../formats/data-formatting";
 
 export function DayView(props) {
   const [data, setData] = useState(null);
@@ -28,34 +29,53 @@ export function DayView(props) {
         fontSize: "1em",
       },
     },
+    cells: {
+      style: {
+        borderRight: "1px solid #ddd",
+      },
+    },
   };
 
   const dayColumns = [
     {
       id: "time",
-      name: "Time",
-      selector: (row) => row.startTime,
-      cell: (row) => row.startTime.split("T")[1].slice(0, 5),
-      sortable: true,
-    },
-    {
-      name: "Production", // Listed as mWh in database
-      selector: (row) => row.productionAmount,
-      cell: (row) => `${Math.round(row.productionAmount)} mWh`,
-      sortable: true,
-    },
-    {
-      name: "Consumption", // Listed as kWh in database, convert to mWh
-      selector: (row) => row.consumptionAmount,
-      cell: (row) => `${Math.round(row.consumptionAmount / 1000)} mWh`,
-      sortable: true,
-    },
-    {
-      name: "Hour price",
-      selector: (row) => row.hourlyPrice,
-      cell: (row) => (
-        <>{((row.hourlyPrice * 100) / 100).toFixed(2)} snt / kWh</>
+      name: (
+        <div>
+          Time
+        </div>
       ),
+      selector: (row) => row.startTime,
+      cell: (row) => formats.time(row.startTime),
+      sortable: true,
+    },
+    {
+      name: (
+        <div>
+          Production <div className="highlight">(mWh)</div>
+        </div>
+      ),
+      selector: (row) => row.productionAmount,
+      cell: (row) => formats.production(row.productionAmount),
+      sortable: true,
+    },
+    {
+      name: (
+        <div>
+          Consumption <div className="highlight">(mWh)</div>
+        </div>
+      ),
+      selector: (row) => row.consumptionAmount,
+      cell: (row) => formats.consumption(row.consumptionAmount),
+      sortable: true,
+    },
+    {
+      name: (
+        <div>
+          Hour price <div className="highlight">(snt/kWh)</div>
+        </div>
+      ),
+      selector: (row) => row.hourlyPrice,
+      cell: (row) => formats.price(row.hourlyPrice),
       sortable: true,
     },
   ];
@@ -78,9 +98,9 @@ export function DayView(props) {
     console.log("useEffect, day-view:", props.row);
 
     const dayViewData = {
-      totalProduction: props.row.totalProduction,
-      totalConsumption: props.row.totalConsumption,
-      averagePrice: props.row.averagePrice,
+      totalProduction: formats.production(props.row.totalProduction) + " mWh",
+      totalConsumption: formats.consumption(props.row.totalConsumption) + " mWh",
+      averagePrice: formats.price(props.row.averagePrice) + " snt/kWh",
       mostConsumptionComparedToProduction: null,
       cheapestHours: [],
     };
