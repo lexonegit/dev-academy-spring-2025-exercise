@@ -22,7 +22,7 @@ fastify.register(pg, {
 });
 
 // Routes
-fastify.register(dataRoute, { prefix: "api/data" });
+fastify.register(dataRoute, { prefix: "api" });
 
 // 404 page handling
 fastify.setNotFoundHandler(async (request, reply) => {

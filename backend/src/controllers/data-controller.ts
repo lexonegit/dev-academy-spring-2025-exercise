@@ -16,8 +16,6 @@ export async function getData(request: FastifyRequest, reply: FastifyReply) {
   const startDateIso = new Date(startDate).toISOString().split("T")[0];
   const endDateIso = new Date(endDate).toISOString().split("T")[0];
 
-  console.log("Date:", startDateIso, endDateIso);
-
   const query = {
     text: `
       SELECT
@@ -66,8 +64,6 @@ export async function getDayDetailed(
   };
 
   const dateIso = new Date(date).toISOString().split("T")[0];
-
-  console.log("Fetching day:", dateIso);
 
   const query = {
     text: `
