@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { getDayDetailed, getData } from "../controllers/data-controller";
+import { testApi,getDayDetailed, getData } from "../controllers/data-controller";
 
 async function dataRoute(fastify: FastifyInstance) {
+  fastify.get("/test", testApi);
   fastify.get("/", getData);
 
   // This other route ended up not being used, but idea was

@@ -1,5 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
+export async function testApi(request: FastifyRequest, reply: FastifyReply) {
+  reply.header("Content-Type", "application/json; charset=utf-8");
+  reply.code(200).send({ message: "Yes, The backend API is running!" });
+}
+
 export async function getData(request: FastifyRequest, reply: FastifyReply) {
   const { startDate, endDate } = request.query as {
     startDate: string;
@@ -92,65 +97,3 @@ export async function getDayDetailed(
   reply.header("Content-Type", "application/json; charset=utf-8");
   reply.code(200).send(result.rows[0]);
 }
-
-// // Calculate longset consecutive negative hours
-// for (const row of result.rows) {
-//   let consecutiveNegativeHours = 0;
-//   let maxNegativeHours = 0;
-
-//   for (const entry of row.entries) {
-//     // console.log(entry.hourlyPrice, entry.hourlyPrice < 0);
-
-//     if (entry.hourlyPrice < 0) {
-//       consecutiveNegativeHours++;
-//       maxNegativeHours = Math.max(maxNegativeHours, consecutiveNegativeHours);
-//     } else {
-//       consecutiveNegativeHours = 0;
-//     }
-//   }
-
-//   row.longestConsecutiveNegativeHours = maxNegativeHours;
-//   // console.log(row.date, maxNegativeHours);
-// }
-
-// // Calculate hour with most consumption compared to production
-// for (const row of result.rows) {
-//   let obj = {
-//     hour: 0,
-//     percentage: 0,
-//   };
-//   let currentHighest = 0;
-
-//   for (const entry of row.entries) {
-//     const mWhConsumption = entry.consumptionAmount / 1000;
-//     const ratio = mWhConsumption / entry.productionAmount;
-
-//     console.log(
-//       mWhConsumption,
-//       "/",
-//       entry.productionAmount,
-//       "=",
-//       ratio,
-//       currentHighest
-//     );
-
-//     if (ratio > currentHighest) {
-//       currentHighest = ratio;
-
-//       obj = {
-//         hour: entry.startTime.split("T")[1],
-//         percentage: Math.round(ratio * 1000) / 10,
-//       };
-//     }
-//   }
-
-//   console.log("final", obj);
-//   row.mostConsumptionComparedToProduction = obj;
-// }
-
-// // Get top 3 cheapest hours
-// for (const row of result.rows) {
-//   row.cheapestHours = row.entries
-//     .sort((a, b) => a.hourlyPrice - b.hourlyPrice)
-//     .slice(0, 3);
-// }
