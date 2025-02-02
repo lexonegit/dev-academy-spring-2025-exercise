@@ -7,13 +7,13 @@ const production = (value) => {
 };
 
 const consumption = (value) => {
-  return Math.round(value);
+  return Math.round(value / 1000);
 };
 
 const price = (value) => {
-  console.log("PRICE", value);
   return (value).toFixed(2);
 };
+
 
 const hours = (value) => {
   return `${value} hrs`;
