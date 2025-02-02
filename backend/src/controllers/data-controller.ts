@@ -17,10 +17,10 @@ export async function getData(request: FastifyRequest, reply: FastifyReply) {
     text: `
       SELECT
         TO_CHAR(DATE(date), 'YYYY-MM-DD') AS date,
-        COUNT(*) AS count,
-        SUM(consumptionamount) AS "totalConsumption",
-        SUM(productionamount) AS "totalProduction",
-        AVG(hourlyprice) AS "averagePrice",
+        COUNT(*)::int AS count,
+        SUM(consumptionamount)::float8 AS "totalConsumption",
+        SUM(productionamount)::float8 AS "totalProduction",
+        AVG(hourlyprice)::float8 AS "averagePrice",
         json_agg(
           json_build_object(
             -- 'id', id,
