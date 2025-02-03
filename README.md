@@ -10,14 +10,15 @@
 1. First, make sure you already have the provided PostgreSQL database running at `http://localhost:5432` (Docker)
    - <a href="https://github.com/solita/dev-academy-spring-2025-exercise#instructions-for-running-the-database" target="_blank">IF NOT, then you can find the instructions here</a>
 2. Clone this repository
-3. Running the backend
+3. Install <a href="https://nodejs.org/en/download">Node.js</a> (v20.18.2, or higher) if you have not already
+4. Running the backend
 
    - Open a new terminal and navigate to `backend/`
    - Install dependencies with `npm install`
    - Run the application with `npm start`
    - Keep the terminal open
 
-4. Running the frontend
+5. Running the frontend
    - Open a new terminal and navigate to `frontend/`
    - Install dependencies with `npm install`
    - Run the application with `npm start`
