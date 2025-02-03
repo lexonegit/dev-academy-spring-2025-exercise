@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: backendapp_leeviseppala
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5555:5555"
