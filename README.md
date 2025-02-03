@@ -20,7 +20,7 @@
    - Open a new terminal and navigate to `frontend/`
    - Install dependencies with `npm install`
    - Run the application with `npm start`
-   - Keep the terminal open and navigate to `http://localhost:5173`
+   - Keep the terminal open and navigate to <a href="http://localhost:4173" target="_blank">http://localhost:4173</a>
    - Test all the features!
 
 In case of any problems, make sure the ports are correctly set. These can be changed in `config.json` (with both the backend and the frontend)
@@ -31,12 +31,12 @@ This is optional, but you can also run the backend in a Docker container
 
 1. Open a new terminal, navigate to `backend/`
 2. Build Docker image and run it as a container with `docker compose up --build -d`
-3. After some waiting, the backedn should now be running at `http://localhost:5555`
-4. You can verify this by going to <a href="http://localhost:5555/api/test" target="_blank">http://localhost:5555/api/test</a>
+3. After some waiting, the backend should now be running at `http://localhost:5555`
+4. Verify this by going to <a href="http://localhost:5555/api/test" target="_blank">http://localhost:5555/api/test</a>
 
 ## Listing of project features
 
--> <a href="#" target="_blank">See video demonstration</a>
+<a href="#" target="_blank">See video demonstration</a>
 - Responsive layout scaling
 - Daily statistics list
   - Total electricity production per day (mWh)
