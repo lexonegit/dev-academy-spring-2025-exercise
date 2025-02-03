@@ -7,16 +7,17 @@
 
 ## Instructions (installing & running locally)
 
-1. ### Make sure you already have the provided PostgreSQL database running at `http://localhost:5432` (Docker)
+1. First, make sure you already have the provided PostgreSQL database running at `http://localhost:5432` (Docker)
    - <a href="https://github.com/solita/dev-academy-spring-2025-exercise#instructions-for-running-the-database" target="_blank">IF NOT, then you can find the instructions here</a>
-2. Running the backend
+2. Clone this repository
+3. Running the backend
 
    - Open a new terminal and navigate to `backend/`
    - Install dependencies with `npm install`
    - Run the application with `npm start`
    - Keep the terminal open
 
-3. Running the frontend
+4. Running the frontend
    - Open a new terminal and navigate to `frontend/`
    - Install dependencies with `npm install`
    - Run the application with `npm start`
