@@ -1,4 +1,4 @@
-# Solita Dev Academy Sprint 2025 Exercise (Leevi Seppälä)
+# dev-academy-spring-2025-exercise (Leevi Seppälä)
 
 ### Electricity statistics app
 
@@ -7,36 +7,37 @@
 
 ## Instructions (installing & running locally)
 
-1. **Make sure you already have the provided PostgreSQL database running at `http://localhost:5432` (Docker)**
-   - <a href="https://github.com/solita/dev-academy-spring-2025-exercise#instructions-for-running-the-database">If NOT, the instructions are here</a>
+1. ### Make sure you already have the provided PostgreSQL database running at `http://localhost:5432` (Docker)
+   - <a href="https://github.com/solita/dev-academy-spring-2025-exercise#instructions-for-running-the-database" target="_blank">IF NOT, then you can find the instructions here</a>
 2. Running the backend
 
-   1. Open a new terminal and navigate to `backend/`
-   2. Run `npm install`
-   3. Run `npm start`
-   4. Keep the terminal open
+   - Open a new terminal and navigate to `backend/`
+   - Install dependencies with `npm install`
+   - Run the application with `npm start`
+   - Keep the terminal open
 
 3. Running the frontend
+   - Open a new terminal and navigate to `frontend/`
+   - Install dependencies with `npm install`
+   - Run the application with `npm start`
+   - Keep the terminal open and navigate to `http://localhost:5173`
+   - Test all the features!
 
-   1. Open a new terminal and navigate to `frontend/`
-   2. Run `npm install`
-   3. Run `npm start`
-   4. Keep the terminal open and navigate to `http://localhost:5173`
-   5. Test all the features!
+In case of any problems, make sure the ports are correctly set. These can be changed in `config.json` (with both the backend and the frontend)
 
-In case of any problems, make sure the ports are correctly set (these can be changed in `config.json`, with both the backend and frontend)
+## Running the backend with Docker
 
-## Running the backend service in Docker
-
-This is optional, but you can also run the backend service in a Docker container
+This is optional, but you can also run the backend in a Docker container
 
 1. Open a new terminal, navigate to `backend/`
-2. Run `docker compose up --build --renew-anon-volumes -d`
-3. After some waiting, the backend should be running at `http://localhost:5555`
-4. You can verify this by going to <a href="http://localhost:5555/api/test">http://localhost:5555/api/test</a>
+2. Build Docker image and run it as a container with `docker compose up --build -d`
+3. After some waiting, the backedn should now be running at `http://localhost:5555`
+4. You can verify this by going to <a href="http://localhost:5555/api/test" target="_blank">http://localhost:5555/api/test</a>
 
-## Project feature description
+## Listing of project features
 
+-> <a href="#" target="_blank">See video demonstration</a>
+- Responsive layout scaling
 - Daily statistics list
   - Total electricity production per day (mWh)
   - Total electricity consumption per day (mWh)
