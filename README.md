@@ -36,7 +36,7 @@ This is optional, but you can also run the backend in a Docker container
 
 ## Listing of project features
 
-<a href="#" target="_blank">See video demonstration</a>
+<a href="https://www.youtube.com/watch?v=_n7wbfeAhfY" target="_blank">See video demonstration</a>
 - Responsive layout scaling
 - Daily statistics list
   - Total electricity production per day (mWh)
