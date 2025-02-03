@@ -1,9 +1,9 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
-import config from "../config.json";
+import config from "../config.json" with { type: "json" };
 import pg from "@fastify/postgres";
 
-import dataRoute from "./routes/data-route";
+import dataRoute from "./routes/data-route.js";
 
 const fastify = Fastify({
   logger: true,
@@ -13,7 +13,7 @@ const fastify = Fastify({
 // CORS
 await fastify.register(cors, {
   origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 });
 
 // Database
